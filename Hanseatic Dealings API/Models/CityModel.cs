@@ -1,4 +1,6 @@
-﻿namespace Hanseatic_Dealings_API.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace Hanseatic_Dealings_API.Models;
 
 public class CityModel
 {

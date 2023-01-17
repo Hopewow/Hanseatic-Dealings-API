@@ -5,7 +5,7 @@
 namespace HanseaticDealingsAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateInitial : Migration
+    public partial class initialfix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,7 +40,7 @@ namespace HanseaticDealingsAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CityStorageModel",
+                name: "CitiesStorage",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -48,57 +48,59 @@ namespace HanseaticDealingsAPI.Migrations
                     Item = table.Column<int>(type: "int", nullable: false),
                     Limit = table.Column<int>(type: "int", nullable: false),
                     Current = table.Column<int>(type: "int", nullable: false),
-                    CityModelId = table.Column<int>(type: "int", nullable: true)
+                    CityId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CityStorageModel", x => x.Id);
+                    table.PrimaryKey("PK_CitiesStorage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CityStorageModel_Cities_CityModelId",
-                        column: x => x.CityModelId,
+                        name: "FK_CitiesStorage_Cities_CityId",
+                        column: x => x.CityId,
                         principalTable: "Cities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ShipStorageModel",
+                name: "PlayersStorage",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Item = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<int>(type: "int", nullable: false),
-                    ShipModelId = table.Column<int>(type: "int", nullable: true)
+                    PlayerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShipStorageModel", x => x.Id);
+                    table.PrimaryKey("PK_PlayersStorage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ShipStorageModel_Players_ShipModelId",
-                        column: x => x.ShipModelId,
+                        name: "FK_PlayersStorage_Players_PlayerId",
+                        column: x => x.PlayerId,
                         principalTable: "Players",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CityStorageModel_CityModelId",
-                table: "CityStorageModel",
-                column: "CityModelId");
+                name: "IX_CitiesStorage_CityId",
+                table: "CitiesStorage",
+                column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ShipStorageModel_ShipModelId",
-                table: "ShipStorageModel",
-                column: "ShipModelId");
+                name: "IX_PlayersStorage_PlayerId",
+                table: "PlayersStorage",
+                column: "PlayerId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CityStorageModel");
+                name: "CitiesStorage");
 
             migrationBuilder.DropTable(
-                name: "ShipStorageModel");
+                name: "PlayersStorage");
 
             migrationBuilder.DropTable(
                 name: "Cities");
