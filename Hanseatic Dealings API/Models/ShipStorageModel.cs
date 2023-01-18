@@ -8,7 +8,7 @@ namespace Hanseatic_Dealings_API.Models
         public GoodsModel Item { get; set; }
         public int Amount { get; set; }
         [JsonIgnore]
-        public ShipModel Player { get; set; }
+        public ShipModel? Player { get; set; }
         public int PlayerId { get; set; }
     }
 }

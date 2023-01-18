@@ -7,60 +7,24 @@ namespace Hanseatic_Dealings_API.Controllers;
 [ApiController]
 public class PlayerController : Controller
 {
-    private static List<ShipModel> players = new List<ShipModel>
+    private readonly DataContext _context;
+
+    public PlayerController(DataContext context)
     {
-        new ShipModel {
-            Id = 1,
-            Name = "Kamakazi",
-            Money = 100,
-            Goods = new List<ShipStorageModel>
-            {
-                new ShipStorageModel
-                {
-                     Id = 1,
-                     Item = GoodsModel.Wood,
-                     Amount = 13,
-                },
-                new ShipStorageModel
-                {
-                    Id = 2,
-                    Item = GoodsModel.Meat,
-                    Amount = 4,
-                }
-            }
-        },
-        new ShipModel {
-            Id = 2,
-            Name = "Yamato",
-            Money = 100,
-            Goods = new List<ShipStorageModel>
-            {
-                new ShipStorageModel
-                {
-                    Id = 3,
-                    Item = GoodsModel.Beer,
-                    Amount = 34,
-                },
-                new ShipStorageModel
-                {
-                    Id = 4,
-                    Item = GoodsModel.Iron,
-                    Amount = 23,
-                }
-            }
-        }
-    };
+        _context = context;
+    }
 
     [HttpGet]
     public async Task<ActionResult<List<ShipModel>>> Get()
     {
-        return Ok(players);
+        
+        return Ok( await _context.Players.ToArrayAsync());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ShipModel>> Get(int id)
     {
-        ShipModel player = players.Find(x => x.Id == id);
+        var player = await _context.Players.Include(c => c.Goods).FirstOrDefaultAsync(c => c.Id == id);
         if (player == null)
         {
             return BadRequest("Player not found.");
@@ -71,21 +35,24 @@ public class PlayerController : Controller
     [HttpPost]
     public async Task<ActionResult<List<ShipModel>>> AddPlayer(ShipModel ship)
     {
-        players.Add(ship);
-        return Ok(players);
+        _context.Players.Add(ship);
+        await _context.SaveChangesAsync();
+        return Ok( await _context.Players.ToListAsync());
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> removeShip(int id)
+    public async Task<ActionResult> RemoveShip(int id)
     {
-        ShipModel player = players.Find(x => x.Id == id);
+        var player = await _context.Players.FindAsync(id);
+
 
         if (player == null)
         {
             return BadRequest("Player not found.");
         }
 
-        players.Remove(player);
+        _context.Players.Remove(player);
+        _context.SaveChanges();
         return Ok();
     }
 }
