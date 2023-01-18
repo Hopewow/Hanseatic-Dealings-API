@@ -33,11 +33,23 @@ public class PlayerController : Controller
     } 
 
     [HttpPost]
-    public async Task<ActionResult<List<ShipModel>>> AddPlayer(ShipModel ship)
+    public async Task<ActionResult<ShipModel>> AddPlayer(ShipModel ship)
     {
+        ship.Goods = new List<ShipStorageModel>();
+        foreach (GoodsModel item in Enum.GetValues(typeof(GoodsModel)))
+        {
+            ShipStorageModel goods = new()
+            {
+                Amount = 0,
+                Item = item
+            };
+            ship.Goods.Add(goods);
+        }
+       
         _context.Players.Add(ship);
         await _context.SaveChangesAsync();
-        return Ok( await _context.Players.ToListAsync());
+        
+        return Ok( await _context.Players.FindAsync(ship.Id));
     }
 
     [HttpDelete("{id}")]
