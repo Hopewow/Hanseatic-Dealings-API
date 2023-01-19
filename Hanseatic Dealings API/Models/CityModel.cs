@@ -8,5 +8,5 @@ public class CityModel
     public string Name { get; set; }
     public string Xcord { get; set; }
     public string Ycord { get; set; }
-    public List<CityStorageModel> Goods { get; set; }
+    public List<CityStorageModel>? Goods { get; set; }
 }
