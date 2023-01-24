@@ -6,8 +6,9 @@ namespace Hanseatic_Dealings_API.DataLayer;
 public class DataContext : DbContext
 {
     public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-    public DbSet<ShipModel> Players { get; set; }
+    public DbSet<ShipModel> Ships { get; set; }
     public DbSet<CityModel> Cities { get; set; }
-    public DbSet<CityStorageModel> CitiesStorage { get; set; }
-    public DbSet<ShipStorageModel> PlayersStorage { get; set; }
+    public DbSet<CityStorageModel> CitiesStorages { get; set; }
+    public DbSet<ShipStorageModel> ShipStorages { get; set; }
+    public DbSet<UserModel> Users { get; set; }
 }

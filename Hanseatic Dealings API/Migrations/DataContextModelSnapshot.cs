@@ -70,7 +70,7 @@ namespace HanseaticDealingsAPI.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("CitiesStorage");
+                    b.ToTable("CitiesStorages");
                 });
 
             modelBuilder.Entity("Hanseatic_Dealings_API.Models.ShipModel", b =>
@@ -88,9 +88,14 @@ namespace HanseaticDealingsAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Players");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Ships");
                 });
 
             modelBuilder.Entity("Hanseatic_Dealings_API.Models.ShipStorageModel", b =>
@@ -114,7 +119,31 @@ namespace HanseaticDealingsAPI.Migrations
 
                     b.HasIndex("PlayerId");
 
-                    b.ToTable("PlayersStorage");
+                    b.ToTable("ShipStorages");
+                });
+
+            modelBuilder.Entity("Hanseatic_Dealings_API.Models.UserModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Hanseatic_Dealings_API.Models.CityStorageModel", b =>
@@ -126,6 +155,17 @@ namespace HanseaticDealingsAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
+                });
+
+            modelBuilder.Entity("Hanseatic_Dealings_API.Models.ShipModel", b =>
+                {
+                    b.HasOne("Hanseatic_Dealings_API.Models.UserModel", "User")
+                        .WithMany("Ships")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Hanseatic_Dealings_API.Models.ShipStorageModel", b =>
@@ -147,6 +187,11 @@ namespace HanseaticDealingsAPI.Migrations
             modelBuilder.Entity("Hanseatic_Dealings_API.Models.ShipModel", b =>
                 {
                     b.Navigation("Goods");
+                });
+
+            modelBuilder.Entity("Hanseatic_Dealings_API.Models.UserModel", b =>
+                {
+                    b.Navigation("Ships");
                 });
 #pragma warning restore 612, 618
         }

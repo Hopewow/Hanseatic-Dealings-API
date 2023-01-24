@@ -76,7 +76,7 @@ public class CityController : ControllerBase
     [HttpPut("CityItem")]
     public async Task<ActionResult<CityModel>> UpdateCityItem(CityStorageModel storage)
     {
-        var dbCityStorage = await context.CitiesStorage.FindAsync(storage.Id);
+        var dbCityStorage = await context.CitiesStorages.FindAsync(storage.Id);
         if (dbCityStorage == null) return BadRequest("City does not exist.");
 
         dbCityStorage.Item = storage.Item;
@@ -92,7 +92,7 @@ public class CityController : ControllerBase
     [HttpPatch("Purchase")]
     public async Task<ActionResult<CityModel>> PurchaseItem(MarketModel market)
     {
-        var dbCityStorage = await context.CitiesStorage.FindAsync(market.CityStorage.Id);
+        var dbCityStorage = await context.CitiesStorages.FindAsync(market.CityStorage.Id);
 
         // Section for checking proper data is coming in for CityStorage
         if (dbCityStorage == null) return BadRequest("Item does not exist.");
@@ -102,7 +102,7 @@ public class CityController : ControllerBase
         // Section handles the transaction of how much product should be removed from the city and added to the player.
         int removeFromCurrent = (dbCityStorage.Current <= market.Amount) ? dbCityStorage.Current : market.Amount;
 
-        var dbPlayerStorage = await context.PlayersStorage.Where(p => (p.Item == market.CityStorage.Item && p.PlayerId == market.Player.Id)).FirstOrDefaultAsync();
+        var dbPlayerStorage = await context.ShipStorages.Where(p => (p.Item == market.CityStorage.Item && p.PlayerId == market.Player.Id)).FirstOrDefaultAsync();
 
         if (dbPlayerStorage == null)
         {
@@ -113,7 +113,7 @@ public class CityController : ControllerBase
                 PlayerId = market.Player.Id,
             };
 
-            await context.PlayersStorage.AddAsync(shipStorage);
+            await context.ShipStorages.AddAsync(shipStorage);
         }
         
         dbPlayerStorage.Amount += removeFromCurrent;
@@ -123,7 +123,7 @@ public class CityController : ControllerBase
         int pricePr = Convert.ToInt32(-3 * (2 * dbCityStorage.Current / dbCityStorage.Limit - 1) ^ 3 + 5);
         pricePr = pricePr * removeFromCurrent;
 
-        var dbPlayer = await context.Players.FindAsync(market.Player.Id);
+        var dbPlayer = await context.Ships.FindAsync(market.Player.Id);
         if (dbPlayer == null) return BadRequest("Player not found.");
         if (dbPlayer.Money <= pricePr) return StatusCode(StatusCodes.Status402PaymentRequired, "You do not have the funds for this transaction.");
 
@@ -137,7 +137,7 @@ public class CityController : ControllerBase
     [HttpPatch("Sell")]
     public async Task<ActionResult<CityModel>> SellItem(MarketModel market)
     {
-        var dbCityStorage = await context.CitiesStorage.FindAsync(market.CityStorage.Id);
+        var dbCityStorage = await context.CitiesStorages.FindAsync(market.CityStorage.Id);
 
         // Section for checking proper data is coming in for CityStorage
         if (dbCityStorage == null) return BadRequest("Item does not exist.");
@@ -145,7 +145,7 @@ public class CityController : ControllerBase
         if (dbCityStorage.Current != market.CityStorage.Current) return Conflict(await context.Cities.Include(c => c.Goods).FirstOrDefaultAsync(c => c.Id == market.CityStorage.CityId));
 
         // Section handles the transaction of how much product should be moved from the city from the player.
-        var dbPlayerStorage = await context.PlayersStorage.Where(p => (p.Item == market.CityStorage.Item && p.PlayerId == market.Player.Id)).FirstOrDefaultAsync();
+        var dbPlayerStorage = await context.ShipStorages.Where(p => (p.Item == market.CityStorage.Item && p.PlayerId == market.Player.Id)).FirstOrDefaultAsync();
 
         int removeFromCurrent = 0;
 
@@ -158,7 +158,7 @@ public class CityController : ControllerBase
                 PlayerId = market.Player.Id,
             };
 
-            await context.PlayersStorage.AddAsync(shipStorage);
+            await context.ShipStorages.AddAsync(shipStorage);
             return NotFound("You do not have this product on your ship.");
         }
 
@@ -172,7 +172,7 @@ public class CityController : ControllerBase
         // Section for getting price for material and checking if user has enough money.
         int pricePr = Convert.ToInt32(-3 * (2 * dbCityStorage.Current / dbCityStorage.Limit - 1) ^ 3 + 3);
 
-        var dbPlayer = await context.Players.FindAsync(market.Player.Id);
+        var dbPlayer = await context.Ships.FindAsync(market.Player.Id);
         if (dbPlayer == null) return BadRequest("Player not found.");
 
         dbPlayer.Money += (pricePr*removeFromCurrent);

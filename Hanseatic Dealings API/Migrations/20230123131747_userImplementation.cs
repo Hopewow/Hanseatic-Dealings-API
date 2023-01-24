@@ -5,7 +5,7 @@
 namespace HanseaticDealingsAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class initialfix : Migration
+    public partial class userImplementation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,21 +26,22 @@ namespace HanseaticDealingsAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Players",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Money = table.Column<int>(type: "int", nullable: false)
+                    email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    token = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CitiesStorage",
+                name: "CitiesStorages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -52,9 +53,9 @@ namespace HanseaticDealingsAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CitiesStorage", x => x.Id);
+                    table.PrimaryKey("PK_CitiesStorages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CitiesStorage_Cities_CityId",
+                        name: "FK_CitiesStorages_Cities_CityId",
                         column: x => x.CityId,
                         principalTable: "Cities",
                         principalColumn: "Id",
@@ -62,7 +63,28 @@ namespace HanseaticDealingsAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PlayersStorage",
+                name: "Ships",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Money = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ships", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ships_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShipStorages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -73,23 +95,28 @@ namespace HanseaticDealingsAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PlayersStorage", x => x.Id);
+                    table.PrimaryKey("PK_ShipStorages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PlayersStorage_Players_PlayerId",
+                        name: "FK_ShipStorages_Ships_PlayerId",
                         column: x => x.PlayerId,
-                        principalTable: "Players",
+                        principalTable: "Ships",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CitiesStorage_CityId",
-                table: "CitiesStorage",
+                name: "IX_CitiesStorages_CityId",
+                table: "CitiesStorages",
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayersStorage_PlayerId",
-                table: "PlayersStorage",
+                name: "IX_Ships_UserId",
+                table: "Ships",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShipStorages_PlayerId",
+                table: "ShipStorages",
                 column: "PlayerId");
         }
 
@@ -97,16 +124,19 @@ namespace HanseaticDealingsAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CitiesStorage");
+                name: "CitiesStorages");
 
             migrationBuilder.DropTable(
-                name: "PlayersStorage");
+                name: "ShipStorages");
 
             migrationBuilder.DropTable(
                 name: "Cities");
 
             migrationBuilder.DropTable(
-                name: "Players");
+                name: "Ships");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }
