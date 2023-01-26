@@ -43,6 +43,7 @@ public class ShipController : Controller
     [HttpPost]
     public async Task<ActionResult<ShipModel>> AddPlayer(ShipModel ship)
     {
+        ship.Money = 100;
         ship.Goods = new List<ShipStorageModel>();
         foreach (GoodsModel item in Enum.GetValues(typeof(GoodsModel)))
         {
