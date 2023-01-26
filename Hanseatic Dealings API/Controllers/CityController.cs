@@ -89,7 +89,7 @@ public class CityController : ControllerBase
         return Ok(await context.Cities.Include(c => c.Goods).FirstOrDefaultAsync(c => c.Id == storage.CityId));
     }
 
-    [HttpPatch("Purchase")]
+    [HttpPut("Purchase")]
     public async Task<ActionResult<CityModel>> PurchaseItem(MarketModel market)
     {
         var dbCityStorage = await context.CitiesStorages.FindAsync(market.CityStorage.Id);
@@ -134,7 +134,7 @@ public class CityController : ControllerBase
         return Ok(await context.Cities.Include(c => c.Goods).FirstOrDefaultAsync(c => c.Id == market.CityStorage.CityId));
     }
 
-    [HttpPatch("Sell")]
+    [HttpPut("Sell")]
     public async Task<ActionResult<CityModel>> SellItem(MarketModel market)
     {
         var dbCityStorage = await context.CitiesStorages.FindAsync(market.CityStorage.Id);
